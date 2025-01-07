@@ -1,6 +1,6 @@
 {
-  "appId": "com.swifty_companion",
-  "appName": "swifty-companion",
+  "appId": "com.swifty_protein",
+  "appName": "swifty-protein",
   "webDir": ".output/public",
   "plugins": {
     "CapacitorHttp": {

@@ -1,4 +1,4 @@
-package com.swifty_companion;
+package com.swifty_protein;
 
 import com.getcapacitor.BridgeActivity;
 
