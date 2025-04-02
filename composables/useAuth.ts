@@ -1,21 +1,25 @@
-import { ref } from "vue";
 import { NativeBiometric } from "@capgo/capacitor-native-biometric";
 import { Preferences } from "@capacitor/preferences";
 
 interface User {
-	id: string;
 	username: string;
 	password: string;
 	createdAt: Date;
 }
 
-export const useAuth = async () => {
-	const user = ref<User | null>(null);
-	const users = ref<User[]>([]);
-
-	const { value } = await Preferences.get({ key: "users" });
-	if (value) {
-		users.value = JSON.parse(value);
+let first = true;
+export const useAuth = () => {
+	const user = useState<User | null>("user", () => null);
+	const users = useState<User[]>("user", () => []);
+	if (first) {
+		first = false;
+		(async () => {
+			const { value } = await Preferences.get({ key: "users" });
+			if (value) {
+				users.value = JSON.parse(value) || [];
+				console.log(users.value);
+			}
+		})();
 	}
 
 	watchEffect(async () => {
@@ -77,7 +81,6 @@ export const useAuth = async () => {
 		}
 
 		const newUser: User = {
-			id: Date.now().toString(),
 			username,
 			password,
 			createdAt: new Date(),

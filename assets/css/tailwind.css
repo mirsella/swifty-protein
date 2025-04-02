@@ -1,3 +1,5 @@
 @import "tailwindcss";
-@plugin "daisyui";
+@plugin "daisyui" {
+	themes: silk --default, coffee --prefersdark;
+}
 @plugin "@egoist/tailwindcss-icons";
