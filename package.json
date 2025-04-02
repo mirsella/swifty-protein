@@ -12,6 +12,7 @@
   "dependencies": {
     "@capacitor/android": "^7.2.0",
     "@capacitor/core": "^7.2.0",
+    "@capgo/capacitor-native-biometric": "^7.1.7",
     "@iconify-json/carbon": "^1.2.8",
     "@nuxtjs/tailwindcss": "^6.13.2",
     "vue": "latest"

@@ -1,3 +1,5 @@
+requirements.txt
+
 # Nuxt dev/build outputs
 *.apk
 .output
