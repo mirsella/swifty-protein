@@ -1,5 +1,6 @@
 import { NativeBiometric } from "@capgo/capacitor-native-biometric";
 import { Preferences } from "@capacitor/preferences";
+import { Capacitor } from "@capacitor/core";
 
 interface User {
 	username: string;
@@ -15,21 +16,29 @@ export const useAuth = () => {
 		first = false;
 		(async () => {
 			const { value } = await Preferences.get({ key: "users" });
-			if (value) {
+			if (value && value.length > 0) {
 				users.value = JSON.parse(value) || [];
 				console.log(users.value);
 			}
 		})();
 	}
 
-	watchEffect(async () => {
-		Preferences.set({
-			key: "users",
-			value: JSON.stringify(users.value),
-		});
-	});
+	watch(
+		users,
+		() => {
+			console.log(`saving ${users.value.length} users to preferences`);
+			Preferences.set({
+				key: "users",
+				value: JSON.stringify(users.value),
+			});
+		},
+		{ deep: true },
+	);
 
 	async function isBiometricsAvailable() {
+		if (!Capacitor.isNativePlatform()) {
+			return false;
+		}
 		try {
 			const result = await NativeBiometric.isAvailable();
 			return result.isAvailable;

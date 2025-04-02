@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const auth = await useAuth();
+const auth = useAuth();
 
 const username = ref("");
 const password = ref("");
