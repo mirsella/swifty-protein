@@ -14,7 +14,7 @@
 		"@capacitor/core": "^7.2.0",
 		"@capgo/capacitor-native-biometric": "^7.1.7",
 		"@iconify-json/carbon": "^1.2.8",
-		"@nuxtjs/tailwindcss": "^6.13.2",
+		"@tailwindcss/vite": "^4.1.1",
 		"vue": "latest"
 	},
 	"devDependencies": {
