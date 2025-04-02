@@ -3,6 +3,7 @@ export default defineNuxtRouteMiddleware(async (to, _from) => {
 
 	// If not authenticated and not on index (login) page, redirect to login
 	if (!user.value && !to.path.startsWith("/users")) {
-		return navigateTo("/users");
+		console.error("ALLOWING NON LOGGED IN USER FOR DEVELOPMENT");
+		// return navigateTo("/users");
 	}
 });
