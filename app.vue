@@ -1,5 +1,10 @@
 <script setup lang="ts">
 const user = useAuth().user;
+watchEffect(() => {
+  if (!user.value) {
+    navigateTo("/users");
+  }
+});
 </script>
 <template>
   <div class="bg-base-200 min-h-screen">
