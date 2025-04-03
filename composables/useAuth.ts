@@ -81,9 +81,9 @@ export const useAuth = () => {
 		if (u) {
 			console.log("sucessfully authenticated with password, user", username);
 			user.value = u;
-			return true;
+		} else {
+			throw new Error("Invalid username or password");
 		}
-		return false;
 	}
 
 	async function registerUser(username: string, password: string) {
@@ -110,6 +110,7 @@ export const useAuth = () => {
 
 	function logout() {
 		user.value = null;
+		navigateTo("/");
 	}
 
 	return {

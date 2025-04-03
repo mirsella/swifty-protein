@@ -4,17 +4,25 @@ const auth = useAuth();
 const new_username = ref("");
 const new_password = ref("");
 
-const login_modal = useTemplateRef("login_modal");
-onMounted(() => {
-  login_modal.value?.showModal();
+const error = ref("");
+const error_modal = useTemplateRef("error_modal");
+error_modal.value?.addEventListener("close", () => {
+  error.value = "";
 });
+watch(error, () => {
+  if (error.value.length > 0) {
+    error_modal.value?.showModal();
+  }
+});
+
+const login_modal = useTemplateRef("login_modal");
 const login_username = ref("");
 const login_password = ref("");
 async function trylogin(username: string) {
   login_username.value = username;
   try {
     if (await auth.isBiometricsAvailable()) {
-      auth.authenticateWithBiometrics(username);
+      await auth.authenticateWithBiometrics(username);
     } else {
       login_modal.value?.showModal();
       await new Promise((resolve) =>
@@ -26,9 +34,10 @@ async function trylogin(username: string) {
         auth.authenticateWithPassword(username, login_password.value);
       }
     }
-  } catch (error) {
-    console.error(error);
-    //TODO: show a error modal
+    navigateTo("/");
+  } catch (e: unknown) {
+    console.error(e);
+    error.value = (e as Error).message;
   }
 }
 </script>
@@ -37,6 +46,18 @@ async function trylogin(username: string) {
   <div
     class="flex flex-col justify-center items-center w-9/10 md:w-full max-w-lg mx-auto gap-4"
   >
+    <dialog ref="error_modal" class="modal">
+      <div class="modal-box space-y-4 !px-20 max-w-lg">
+        <h3 class="text-lg font-bold text-center">
+          Login for user {{ login_username }} failed
+        </h3>
+        <h1 class="font-semibold text-error text-center">Error: {{ error }}</h1>
+      </div>
+      <form method="dialog" class="modal-backdrop">
+        <button>close</button>
+      </form>
+    </dialog>
+
     <dialog ref="login_modal" class="modal">
       <form
         class="modal-box space-y-4 !px-20 max-w-lg"
