@@ -81,7 +81,7 @@ async function trylogin(username: string) {
             @click="login_modal?.close()"
             value="Close"
           />
-          <input class="btn btn-primary grow" type="submit" value="Login" />
+          <input class="btn btn-accent grow" type="submit" value="Login" />
         </div>
       </form>
       <form method="dialog" class="modal-backdrop">
@@ -115,7 +115,7 @@ async function trylogin(username: string) {
           minlength="2"
           maxlength="10"
         />
-        <button type="submit" class="btn btn-primary w-full max-w-[20rem]">
+        <button type="submit" class="btn btn-accent w-full max-w-[20rem]">
           Create
         </button>
       </div>
