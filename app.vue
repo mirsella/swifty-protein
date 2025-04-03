@@ -8,11 +8,13 @@ watchEffect(() => {
 </script>
 <template>
   <div class="bg-base-200 min-h-screen">
-    <div class="mb-4 bg-base-100 navbar shadow-sm">
+    <div
+      class="mb-4 bg-base-100 navbar shadow-sm pt-[env(safe-area-inset-top)]"
+    >
       <div class="flex-1">swifty protein</div>
       <div v-if="user">
-        <div class="mx-4 badge">{{ user?.username }}</div>
-        <button class="mx-4 btn btn-error" @click="useAuth().logout()">
+        <div class="mx-2 badge">{{ user?.username }}</div>
+        <button class="mx-2 btn btn-error" @click="useAuth().logout()">
           Logout
         </button>
       </div>
