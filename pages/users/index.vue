@@ -1,22 +1,81 @@
 <script setup lang="ts">
 const auth = useAuth();
 
-const username = ref("");
-const password = ref("");
+const new_username = ref("");
+const new_password = ref("");
+
+const login_modal = useTemplateRef("login_modal");
+onMounted(() => {
+  login_modal.value?.showModal();
+});
+const login_username = ref("");
+const login_password = ref("");
+async function trylogin(username: string) {
+  login_username.value = username;
+  try {
+    if (await auth.isBiometricsAvailable()) {
+      auth.authenticateWithBiometrics(username);
+    } else {
+      login_modal.value?.showModal();
+      await new Promise((resolve) =>
+        login_modal.value?.addEventListener("close", resolve),
+      );
+      const password = login_modal.value?.returnValue;
+      console.log("modal return value", password);
+      if (password && password.length > 0) {
+        auth.authenticateWithPassword(username, login_password.value);
+      }
+    }
+  } catch (error) {
+    console.error(error);
+    //TODO: show a error modal
+  }
+}
 </script>
 
 <template>
   <div
     class="flex flex-col justify-center items-center w-9/10 md:w-full max-w-lg mx-auto gap-4"
   >
+    <dialog ref="login_modal" class="modal">
+      <form
+        class="modal-box space-y-4 !px-20 max-w-lg"
+        @submit.prevent="login_modal?.close(login_password)"
+      >
+        <h3 class="text-lg font-bold text-center">
+          Login for user {{ login_username }}
+        </h3>
+        <input
+          v-model="login_password"
+          type="password"
+          class="input w-full"
+          placeholder="Password"
+          required
+          minlength="2"
+        />
+        <div class="flex-row flex items-center justify-center w-full gap-1">
+          <input
+            type="button"
+            class="btn btn-error grow"
+            @click="login_modal?.close()"
+            value="Close"
+          />
+          <input class="btn btn-primary grow" type="submit" value="Login" />
+        </div>
+      </form>
+      <form method="dialog" class="modal-backdrop">
+        <button>close</button>
+      </form>
+    </dialog>
+
     <form
-      class="card card-dash bg-base-100 shadow-md w-full"
-      @submit.prevent="auth.registerUser(username, password)"
+      class="card bg-base-100 shadow-md w-full"
+      @submit.prevent="auth.registerUser(new_username, new_password)"
     >
       <div class="card-body items-center text-center">
         <h2 class="card-title">New User</h2>
         <input
-          v-model="username"
+          v-model="new_username"
           type="input"
           class="input validator"
           required
@@ -27,31 +86,35 @@ const password = ref("");
           title="Only letters, numbers or dash"
         />
         <input
-          v-model="password"
+          v-model="new_password"
           type="password"
           class="input validator"
           required
           placeholder="Password"
-          minlength="3"
-          maxlength="30"
-          title="Only letters, numbers or dash"
+          minlength="2"
+          maxlength="10"
         />
         <button type="submit" class="btn btn-primary w-full max-w-[20rem]">
           Create
         </button>
       </div>
     </form>
+
     <ul class="list bg-base-100 rounded-box shadow-md w-full">
       <li class="p-4 pb-2 text-xs opacity-60 tracking-wide flex w-full">
         <span class="grow"> Users </span>
         <span> (click to login) </span>
       </li>
-      <li class="list-row" v-for="user in auth.users.value">
+      <li
+        class="list-row cursor-pointer hover:scale-101 hover:bg-base-300 transition-all duration-100"
+        v-for="user in auth.users.value"
+        @click="trylogin(user.username)"
+      >
         <div>
           <div class="font-semibold">{{ user.username }}</div>
           <div class="text-xs uppercase font-semibold opacity-60">
-            created
-            {{ new Date().getMinutes() - user.createdAt.getMinutes() }}min ago
+            created on
+            {{ new Date(user.createdAt).toLocaleString() }}
           </div>
         </div>
       </li>

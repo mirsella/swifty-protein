@@ -5,13 +5,13 @@ import { Capacitor } from "@capacitor/core";
 interface User {
 	username: string;
 	password: string;
-	createdAt: Date;
+	createdAt: number;
 }
 
 let first = true;
 export const useAuth = () => {
 	const user = useState<User | null>("user", () => null);
-	const users = useState<User[]>("user", () => []);
+	const users = useState<User[]>("users", () => []);
 	if (first) {
 		first = false;
 		(async () => {
@@ -66,6 +66,7 @@ export const useAuth = () => {
 				u.password === credentials.password,
 		);
 		if (u) {
+			console.log("sucessfully authenticated with biometrics, user", username);
 			user.value = u;
 		} else {
 			throw new Error("Biometric credentials do not match");
@@ -78,6 +79,7 @@ export const useAuth = () => {
 		);
 
 		if (u) {
+			console.log("sucessfully authenticated with password, user", username);
 			user.value = u;
 			return true;
 		}
@@ -92,7 +94,7 @@ export const useAuth = () => {
 		const newUser: User = {
 			username,
 			password,
-			createdAt: new Date(),
+			createdAt: Date.now(),
 		};
 
 		users.value.push(newUser);
