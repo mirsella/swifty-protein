@@ -34,8 +34,8 @@ async function fetchLigand(ligand: string) {
     const response = await fetch(
       `https://files.rcsb.org/ligands/download/${ligand}.cif`,
     );
-    // TODO: use it in the protein viewer page
-    console.log(await response.text());
+    navigateTo(`/visualizer/${ligand}`);
+    //console.log(await response.text());
   } catch (e) {
     console.error(e);
     error.value = (e as Error).message;
@@ -63,17 +63,12 @@ async function fetchLigand(ligand: string) {
       <input type="search" v-model="search" class="grow" placeholder="Search" />
       <button
         class="i-carbon-trash-can size-8 hover:cursor-pointer hover:scale-105 transition-all duration-100 hover:bg-primary"
-        @click="search = ''"
-      ></button>
+        @click="search = ''"></button>
     </div>
 
     <div class="flex gap-2 flex-wrap w-full justify-center items-center my-2">
-      <button
-        v-for="ligand in ligands_filtered"
-        class="btn btn-secondary"
-        :disabled="loading !== ligand && loading !== null"
-        @click="fetchLigand(ligand)"
-      >
+      <button v-for="ligand in ligands_filtered" class="btn btn-secondary"
+        :disabled="loading !== ligand && loading !== null" @click="fetchLigand(ligand)">
         <span :class="{ 'loading loading-spinner': loading === ligand }">
           {{ ligand }}
         </span>
