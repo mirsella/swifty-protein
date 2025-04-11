@@ -79,19 +79,18 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="flex flex-col items-center justify-center mx-4 min-h-[25rem]">
+  <div class="flex-grow flex flex-col items-center justify-center mx-4 my-4">
     <div v-if="loading" class="text-center p-4">Loading 3D View...</div>
 
     <div ref="viewerContainer"
-      class="relative flex justify-center w-full max-w-4xl min-h-[25rem] bg-base-200 rounded shadow"></div>
-
-    <div v-if="selectedAtom" class="mt-4 p-4 border rounded bg-gray-100 w-full max-w-4xl">
-      <h3 class="text-lg font-bold mb-2">Atom Information</h3>
-      <div class="grid grid-cols-2 gap-2">
-        <div><strong>Element:</strong> {{ selectedAtom.element }}</div>
-        <div><strong>Serial:</strong> {{ selectedAtom.serial }}</div>
-        <div><strong>Bonds:</strong> {{ selectedAtom.bonds }}</div>
-        <div><strong>Position:</strong> ({{ selectedAtom.x }}, {{ selectedAtom.y }}, {{ selectedAtom.z }})</div>
+      class="flex-grow relative flex justify-end w-full max-w-4xl h-80 bg-base-200 rounded shadow">
+      <div v-if="selectedAtom" class="absolute bottom-0 z-10 m-1 p-1 border rounded bg-base-100 shadow-lg">
+        <h3 class="text-lg font-bold">Atom Informations</h3>
+        <div class="grid grid-cols-2 gap-1 text-sm">
+          <div><strong>Element:</strong> {{ selectedAtom.element }}</div>
+          <div><strong>Serial:</strong> {{ selectedAtom.serial }}</div>
+          <div><strong>Bonds:</strong> {{ selectedAtom.bonds }}</div>
+        </div>
       </div>
     </div>
   </div>
