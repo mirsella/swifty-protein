@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
 import * as $3Dmol from '3dmol'
+import { Share } from '@capacitor/share'
+import { Filesystem, Directory } from '@capacitor/filesystem'
 
 const loading = ref(true)
 const viewerContainer = ref(null)
@@ -18,6 +20,47 @@ interface AtomInfo {
 const selectedAtom = ref<AtomInfo | null>(null)
 let viewer: $3Dmol.GLViewer | null = null
 
+const takeAndShareScreenshot = async () => {
+  try {
+    console.log('Capture Screenshot')
+
+    const canvas: HTMLCanvasElement | null = viewerContainer.value?.querySelector('canvas')
+
+    const dataURL = canvas.toDataURL('image/png')
+    const base64 = dataURL.split(',')[1]
+
+    const fileName = `molecule-${ligand}-${Date.now()}.png`
+    const savedFile = await Filesystem.writeFile({
+      path: fileName,
+      data: base64,
+      directory: Directory.Cache,
+      encoding: Filesystem.Encoding.Base64,
+    })
+
+    console.log('Saved canvas screenS', savedFile.uri)
+
+    // before sharing
+    let formattedUri = savedFile.uri
+    if (!formattedUri.startsWith('file://') && !formattedUri.startsWith('content://')) {
+      formattedUri = `file://${formattedUri}`
+    }
+
+    const shareText = selectedAtom.value
+      ? `Check out this ${ligand} molecule! Selected atom: ${selectedAtom.value.element} (${selectedAtom.value.serial})`
+      : `Check out this ${ligand} molecule!`
+
+    await Share.share({
+      title: `${ligand} Molecule Viewer`,
+      text: shareText,
+      files: [formattedUri],
+      dialogTitle: 'Share this molecule'
+    })
+
+  } catch (error) {
+    console.error('Error capturing and sharing screenshot:', error)
+  }
+}
+
 onMounted(async () => {
   try {
     const url = `https://files.rcsb.org/ligands/download/${ligand}_ideal.sdf`
@@ -34,7 +77,6 @@ onMounted(async () => {
 
     // Add click handler for atoms
     viewer.setClickable({}, true, (atom) => {
-
       console.log('Atom clicked:', atom);
 
       selectedAtom.value = {
@@ -82,13 +124,30 @@ onMounted(async () => {
   <div class="flex-grow flex flex-col items-center justify-center mx-4 my-4">
     <div v-if="loading" class="text-center p-4">Loading 3D View...</div>
 
-    <div ref="viewerContainer"
-      class="flex-grow relative flex justify-end w-full max-w-4xl h-80 bg-base-200 rounded shadow">
-      <div v-if="selectedAtom" class="absolute bottom-0 z-10 m-1 p-1 border rounded bg-base-100 shadow-lg">
-        <h3 class="text-lg font-bold">Atom Informations</h3>
+    <div class="flex-grow relative w-full max-w-4xl h-80 overflow-hidden rounded-box">
+
+      <div ref="viewerContainer" class="absolute inset-0 w-full h-full">
+      </div>
+
+      <div v-if="!loading"
+        class="rounded-br-lg w-1/4 absolute top-0 left-0 z-10 flex justify-center items-center gap-2 bg-base-200 p-2">
+        <h3 class="text-lg font-bold text-center">{{ ligand }}</h3>
+      </div>
+
+      <div class="absolute bottom-2 right-2 z-10 flex gap-2">
+        <button @click="takeAndShareScreenshot" class="btn btn-circle btn-sm btn-primary">
+          <i class="i-carbon-share w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div v-if="selectedAtom" class="absolute bottom-0 left-0 z-10 m-1 p-1 border rounded shadow-lg bg-base-100">
+        <h3 class="text-lg font-bold">Atom Informations
+        </h3>
         <div class="grid grid-cols-2 gap-1 text-sm">
-          <div><strong>Element:</strong> {{ selectedAtom.element }}</div>
-          <div><strong>Serial:</strong> {{ selectedAtom.serial }}</div>
+          <div><strong>Element:</strong> {{ selectedAtom.element }}
+          </div>
+          <div><strong>Serial:</strong> {{ selectedAtom.serial }}
+          </div>
           <div><strong>Bonds:</strong> {{ selectedAtom.bonds }}</div>
         </div>
       </div>
