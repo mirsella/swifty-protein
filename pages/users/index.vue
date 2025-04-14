@@ -6,8 +6,10 @@ const new_password = ref("");
 
 const error = ref("");
 const error_modal = useTemplateRef("error_modal");
-error_modal.value?.addEventListener("close", () => {
-  error.value = "";
+onMounted(async () => {
+  error_modal.value?.addEventListener("close", () => {
+    error.value = "";
+  });
 });
 watch(error, () => {
   if (error.value.length > 0) {
@@ -29,13 +31,21 @@ async function trylogin(username: string) {
         login_modal.value?.addEventListener("close", resolve),
       );
       const password = login_modal.value?.returnValue;
-      console.log("modal return value", password);
       if (password && password.length > 0) {
         auth.authenticateWithPassword(username, login_password.value);
       }
     }
     navigateTo("/");
   } catch (e: unknown) {
+    console.error(e);
+    error.value = (e as Error).message;
+  }
+}
+
+async function create_user(username: string, password: string) {
+  try {
+    await auth.registerUser(username, password);
+  } catch (e) {
     console.error(e);
     error.value = (e as Error).message;
   }
@@ -51,7 +61,9 @@ async function trylogin(username: string) {
         <h3 class="text-lg font-bold text-center">
           Login for user {{ login_username }} failed
         </h3>
-        <h1 class="font-semibold text-error text-center">Error: {{ error }}</h1>
+        <h1 class="font-semibold text-error text-center" v-if="error.length">
+          Error: {{ error }}
+        </h1>
       </div>
       <form method="dialog" class="modal-backdrop">
         <button>close</button>
@@ -91,7 +103,7 @@ async function trylogin(username: string) {
 
     <form
       class="card bg-base-100 shadow-md w-full"
-      @submit.prevent="auth.registerUser(new_username, new_password)"
+      @submit.prevent="create_user(new_username, new_password)"
     >
       <div class="card-body items-center text-center">
         <h2 class="card-title">New User</h2>

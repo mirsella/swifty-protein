@@ -15,25 +15,28 @@ export const useAuth = () => {
 	if (first) {
 		first = false;
 		(async () => {
-			const { value } = await Preferences.get({ key: "users" });
-			if (value && value.length > 0) {
-				users.value = JSON.parse(value) || [];
-				console.log(users.value);
+			try {
+				const { value } = await Preferences.get({ key: "users" });
+				if (value && value.length > 0) {
+					users.value = JSON.parse(value) || [];
+					console.log(users.value);
+				}
+			} catch (e) {
+			} finally {
+				watch(
+					users,
+					() => {
+						console.log(`saving ${users.value.length} users to preferences`);
+						Preferences.set({
+							key: "users",
+							value: JSON.stringify(users.value),
+						});
+					},
+					{ deep: true },
+				);
 			}
 		})();
 	}
-
-	watch(
-		users,
-		() => {
-			console.log(`saving ${users.value.length} users to preferences`);
-			Preferences.set({
-				key: "users",
-				value: JSON.stringify(users.value),
-			});
-		},
-		{ deep: true },
-	);
 
 	async function isBiometricsAvailable() {
 		if (!Capacitor.isNativePlatform()) {
