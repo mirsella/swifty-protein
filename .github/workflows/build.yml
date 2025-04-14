@@ -48,3 +48,9 @@ jobs:
         run: |
           cd android
           ./gradlew assembleDebug
+
+      - name: Upload release bundle
+        uses: actions/upload-artifact@v3
+        with:
+          name: app-debug
+          path: client/android/app/build/outputs/apk/debug/app-debug.apk
