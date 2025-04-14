@@ -13,8 +13,10 @@ const ligands_filtered = computed(() => {
 
 const error = ref("");
 const error_modal = useTemplateRef("error_modal");
-error_modal.value?.addEventListener("close", () => {
-  error.value = "";
+onMounted(() => {
+  error_modal.value?.addEventListener("close", () => {
+    error.value = "";
+  });
 });
 watch(error, () => {
   if (error.value.length > 0) {
@@ -63,12 +65,17 @@ async function fetchLigand(ligand: string) {
       <input type="search" v-model="search" class="grow" placeholder="Search" />
       <button
         class="i-carbon-trash-can size-8 hover:cursor-pointer hover:scale-105 transition-all duration-100 hover:bg-primary"
-        @click="search = ''"></button>
+        @click="search = ''"
+      ></button>
     </div>
 
     <div class="flex gap-2 flex-wrap w-full justify-center items-center my-2">
-      <button v-for="ligand in ligands_filtered" class="btn btn-secondary"
-        :disabled="loading !== ligand && loading !== null" @click="fetchLigand(ligand)">
+      <button
+        v-for="ligand in ligands_filtered"
+        class="btn btn-secondary"
+        :disabled="loading !== ligand && loading !== null"
+        @click="fetchLigand(ligand)"
+      >
         <span :class="{ 'loading loading-spinner': loading === ligand }">
           {{ ligand }}
         </span>
