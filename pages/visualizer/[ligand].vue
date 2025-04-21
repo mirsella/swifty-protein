@@ -8,6 +8,7 @@ const loading = ref(true)
 const viewerContainer = ref(null)
 const route = useRoute()
 const ligand = route.params.ligand
+
 interface AtomInfo {
   serial: number
   element: string
@@ -19,6 +20,53 @@ interface AtomInfo {
 
 const selectedAtom = ref<AtomInfo | null>(null)
 let viewer: $3Dmol.GLViewer | null = null
+
+const currentStyle = ref('stick')
+
+const switchStyle = (style: string) => {
+  currentStyle.value = style
+  if (!viewer) return
+
+  // Apply selected style and highlight selected atom
+  switch (style) {
+    case 'stick':
+      viewer.setStyle({}, { stick: {}, sphere: { scale: 0.3 } })
+      if (selectedAtom.value) {
+        viewer.setStyle({ serial: selectedAtom.value.serial }, {
+          stick: {},
+          sphere: { scale: 0.5, color: 'yellow' }
+        })
+      }
+      break
+    case 'ball-stick':
+      viewer.setStyle({}, { stick: { radius: 0.2 }, sphere: { scale: 0.5 } })
+      if (selectedAtom.value) {
+        viewer.setStyle({ serial: selectedAtom.value.serial }, {
+          stick: { radius: 0.3 },
+          sphere: { scale: 0.7, color: 'yellow' }
+        })
+      }
+      break
+    case 'sphere':
+      viewer.setStyle({}, { sphere: { scale: 1 } })
+      if (selectedAtom.value) {
+        viewer.setStyle({ serial: selectedAtom.value.serial }, {
+          sphere: { scale: 1.2, color: 'yellow' }
+        })
+      }
+      break
+    case 'wireframe':
+      viewer.setStyle({}, { line: { linewidth: 2 } })
+      if (selectedAtom.value) {
+        viewer.setStyle({ serial: selectedAtom.value.serial }, {
+          line: { linewidth: 4, color: 'yellow' }
+        })
+      }
+      break
+  }
+
+  viewer.render()
+}
 
 const takeAndShareScreenshot = async () => {
   try {
@@ -73,7 +121,7 @@ onMounted(async () => {
     })
 
     viewer.addModel(data, 'sdf')
-    viewer.setStyle({}, { stick: {}, sphere: { scale: 0.3 } })
+    switchStyle('stick') // apply default style
 
     // Add click handler for atoms
     viewer.setClickable({}, true, (atom) => {
@@ -88,12 +136,8 @@ onMounted(async () => {
         z: atom.z.toFixed(2),
       }
 
-      // Highlight the selected atom
-      viewer.setStyle({}, { stick: {}, sphere: { scale: 0.3 } })
-      viewer.setStyle({ serial: atom.serial }, {
-        stick: {},
-        sphere: { scale: 0.5, color: 'yellow' }
-      })
+      // Apply Selected style and selected atom
+      switchStyle(currentStyle.value)
 
       viewer.render()
     })
@@ -106,8 +150,7 @@ onMounted(async () => {
     const canvas = viewerContainer.value.querySelector('canvas')
     if (canvas) {
       canvas.addEventListener('pointerdown', (event: PointerEvent) => {
-        viewer.setStyle({}, { stick: {}, sphere: { scale: 0.3 } })
-        viewer.render()
+        switchStyle(currentStyle.value) // Reapply style
         selectedAtom.value = null
       })
     }
@@ -125,32 +168,36 @@ onMounted(async () => {
     <div v-if="loading" class="text-center p-4">Loading 3D View...</div>
 
     <div class="flex-grow relative w-full max-w-4xl h-80 overflow-hidden rounded-box">
+      <div ref="viewerContainer" class="absolute inset-0 w-full h-full"></div>
 
-      <div ref="viewerContainer" class="absolute inset-0 w-full h-full">
-      </div>
-
-      <div v-if="!loading"
-        class="rounded-br-lg w-1/4 absolute top-0 left-0 z-10 flex justify-center items-center gap-2 bg-base-200 p-2">
-        <h3 class="text-lg font-bold text-center">{{ ligand }}</h3>
-      </div>
-
-      <div class="absolute bottom-2 right-2 z-10 flex gap-2">
-        <button @click="takeAndShareScreenshot" class="btn btn-circle btn-sm btn-primary">
-          <i class="i-carbon-share w-5 h-5"></i>
-        </button>
-      </div>
-
-      <div v-if="selectedAtom" class="absolute bottom-0 left-0 z-10 m-1 p-1 border rounded shadow-lg bg-base-100">
-        <h3 class="text-lg font-bold">Atom Informations
-        </h3>
-        <div class="grid grid-cols-2 gap-1 text-sm">
-          <div><strong>Element:</strong> {{ selectedAtom.element }}
-          </div>
-          <div><strong>Serial:</strong> {{ selectedAtom.serial }}
-          </div>
-          <div><strong>Bonds:</strong> {{ selectedAtom.bonds }}</div>
+      <template v-if="!loading">
+        <div
+          class="rounded-br-lg w-1/4 absolute top-0 left-0 z-10 flex justify-center items-center gap-2 bg-base-200 p-2">
+          <h3 class="text-lg font-bold text-center">{{ ligand }}</h3>
         </div>
-      </div>
+
+        <div class="absolute top-2 right-2 z-10 flex gap-2">
+          <button v-for="style in ['stick', 'ball-stick', 'sphere', 'wireframe']" :key="style"
+            @click="switchStyle(style)" class="btn btn-sm" :class="{ 'btn-primary': currentStyle === style }">
+            {{ style }}
+          </button>
+        </div>
+
+        <div class="absolute bottom-2 right-2 z-10 flex gap-2">
+          <button @click="takeAndShareScreenshot" class="btn btn-circle btn-sm">
+            <i class="i-carbon-share w-5 h-5"></i>
+          </button>
+        </div>
+
+        <div v-if="selectedAtom" class="absolute bottom-0 left-0 z-10 m-1 p-1 border rounded shadow-lg bg-base-100">
+          <h3 class="text-lg font-bold">Atom Informations</h3>
+          <div class="grid grid-cols-2 gap-1 text-sm">
+            <div><strong>Element:</strong> {{ selectedAtom.element }}</div>
+            <div><strong>Serial:</strong> {{ selectedAtom.serial }}</div>
+            <div><strong>Bonds:</strong> {{ selectedAtom.bonds }}</div>
+          </div>
+        </div>
+      </template>
     </div>
   </div>
 </template>

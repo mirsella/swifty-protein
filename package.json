@@ -8,7 +8,7 @@
 		"generate": "nuxt generate",
 		"preview": "nuxt preview",
 		"postinstall": "nuxt prepare",
-		"android": "cd android && ./gradlew clean && cd .. && nuxt build && nuxt generate && pnpm cap sync android && pnpm cap run android"
+		"android": "nuxt build && nuxt generate && pnpm cap sync android && pnpm cap run android"
 	},
 	"dependencies": {
 		"3dmol": "^2.4.2",
