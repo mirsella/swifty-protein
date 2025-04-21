@@ -176,7 +176,7 @@ onMounted(async () => {
           <h3 class="text-lg font-bold text-center">{{ ligand }}</h3>
         </div>
 
-        <div class="absolute top-2 right-2 z-10 flex gap-2">
+        <div class="absolute bottom-2 left-2 z-10 flex gap-2">
           <button v-for="style in ['stick', 'ball-stick', 'sphere', 'wireframe']" :key="style"
             @click="switchStyle(style)" class="btn btn-sm" :class="{ 'btn-primary': currentStyle === style }">
             {{ style }}
@@ -189,7 +189,7 @@ onMounted(async () => {
           </button>
         </div>
 
-        <div v-if="selectedAtom" class="absolute bottom-0 left-0 z-10 m-1 p-1 border rounded shadow-lg bg-base-100">
+        <div v-if="selectedAtom" class="absolute top-0 right-0 z-10 m-1 p-1 border rounded shadow-lg bg-base-100">
           <h3 class="text-lg font-bold">Atom Informations</h3>
           <div class="grid grid-cols-2 gap-1 text-sm">
             <div><strong>Element:</strong> {{ selectedAtom.element }}</div>
