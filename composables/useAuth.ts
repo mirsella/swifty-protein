@@ -132,20 +132,13 @@ export const useAuth = () => {
 
 		users.value.push(newUser);
 
-		if (await isBiometricsAvailable()) {
-			try {
-				await NativeBiometric.setCredentials({
-					username: username,
-					password: password,
-					server: username,
-				});
-			} catch (setCredentialError) {
-				console.error(
-					`Failed to set biometric credentials for ${username}:`,
-					setCredentialError,
-				);
-			}
-		}
+		try {
+			await NativeBiometric.setCredentials({
+				username: username,
+				password: password,
+				server: username,
+			});
+		} catch (e) {}
 	}
 
 	function logout(): void {
