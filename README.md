@@ -5,7 +5,7 @@
   “Capacitor apps are technically fully native apps. On mobile they use the standard iOS and Android project structure and view hierarchy, of which the Capacitor Web View is a part.”
   https://ionic.io/blog/capacitor-everything-youve-ever-wanted-to-know
 - subject says "You can use any compatible frameworks and libraries"
-- Not off-topic: difference between ft_hangouts and swifty-protein subject, swifty-protein is about OAuth and 42api on mobile app
+- Not off-topic: difference between ft_hangouts and swifty-protein subject
 - svelte is valid https://projects.intra.42.fr/projects/42cursus-swifty-companion/projects_users/2771932
 - React Native AND nativescript directly support webview, could just run the app in it https://docs.nativescript.org/ui/web-view
   https://reactnative.dev/docs/custom-webview-android#javascript-interface
