@@ -12,6 +12,14 @@
 
 ### docker build step:
 
-`docker build -t ionic-capacitor github.com/robingenz/docker-ionic-capacitor`
+```
+
+```
+
+docker build -t ionic-capacitor github.com/robingenz/docker-ionic-capacitor
 docker run --name capacitor-build-container -v .:/app -w /app ionic-capacitor bash -c "npm i -g pnpm && pnpm install && pnpm nuxt generate && npx cap sync android && cd android && ./gradlew assembleDebug"
-`docker cp capacitor-build-container:/app/android/app/build/outputs/apk/debug/app-debug.apk ./app-debug.apk`
+docker cp capacitor-build-container:/app/android/app/build/outputs/apk/debug/app-debug.apk ./app-debug.apk
+
+```
+
+```
