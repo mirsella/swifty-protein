@@ -150,6 +150,7 @@ export const useAuth = () => {
 
 	function logout(): void {
 		user.value = null;
+		navigateTo("/users");
 	}
 
 	async function deleteUser(username: string): Promise<void> {
