@@ -50,6 +50,11 @@ async function create_user(username: string, password: string) {
     error.value = (e as Error).message;
   }
 }
+
+async function delete_user(event: Event, username: string) {
+  event.stopPropagation();
+  useAuth().deleteUser(username);
+}
 </script>
 
 <template>
@@ -139,17 +144,23 @@ async function create_user(username: string, password: string) {
         <span> (click to login) </span>
       </li>
       <li
-        class="list-row cursor-pointer hover:scale-101 hover:bg-base-300 transition-all duration-100"
+        class="list-row cursor-pointer hover:scale-101 hover:bg-base-200 transition-all duration-100 flex"
         v-for="user in auth.users.value"
         @click="trylogin(user.username)"
       >
-        <div>
+        <div class="grow">
           <div class="font-semibold">{{ user.username }}</div>
           <div class="text-xs uppercase font-semibold opacity-60">
             created on
             {{ new Date(user.createdAt).toLocaleString() }}
           </div>
         </div>
+        <button
+          class="btn hover:scale-101 hover:bg-base-300"
+          @click="(e) => delete_user(e, user.username)"
+        >
+          <span class="i-carbon-trash-can"></span>
+        </button>
       </li>
     </ul>
   </div>
