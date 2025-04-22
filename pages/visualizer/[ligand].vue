@@ -8,6 +8,7 @@ const loading = ref(true)
 const viewerContainer = ref(null)
 const route = useRoute()
 const ligand = route.params.ligand
+const ligandData = useLigandData()
 
 interface AtomInfo {
   serial: number
@@ -111,16 +112,16 @@ const takeAndShareScreenshot = async () => {
 
 onMounted(async () => {
   try {
-    const url = `https://files.rcsb.org/ligands/download/${ligand}_ideal.sdf`
-    const response = await fetch(url)
-    const data = await response.text()
+    if (!ligandData.value) {
+      throw new Error('No ligand data available')
+    }
 
     // Create viewer
     viewer = $3Dmol.createViewer(viewerContainer.value, {
       backgroundColor: 'white',
     })
 
-    viewer.addModel(data, 'sdf')
+    viewer.addModel(ligandData.value, 'sdf')
     switchStyle('stick') // apply default style
 
     // Add click handler for atoms

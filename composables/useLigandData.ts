@@ -1,0 +1,1 @@
+export const useLigandData = () => useState<string>('ligandData', () => '')
