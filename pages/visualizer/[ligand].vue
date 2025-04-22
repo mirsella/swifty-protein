@@ -65,7 +65,7 @@ const switchStyle = (style: string) => {
         );
       }
       break;
-    case "wireframe":
+    case "line":
       viewer.setStyle({}, { line: { linewidth: 2 } });
       if (selectedAtom.value) {
         viewer.setStyle(
@@ -195,7 +195,7 @@ onMounted(async () => {
 
         <div class="absolute bottom-2 left-2 z-10 flex gap-2">
           <button
-            v-for="style in ['ball-stick', 'ball', 'sphere', 'wireframe']"
+            v-for="style in ['ball-stick', 'ball', 'sphere', 'line']"
             :key="style"
             @click="switchStyle(style)"
             class="btn btn-sm"
